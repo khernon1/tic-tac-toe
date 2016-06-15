@@ -1,11 +1,14 @@
-require_relative './board.rb'
-require_relative './player.rb'
+ require 'pry'
+ require_relative './players.rb'
+ require_relative './board.rb'
 
 
-game = Player.new
+@player = Players.new
+@board = Board.new
 
-#loop until someone wins
-until Board.result == true
-  game.player_turn
-  game.comp_turn  
+until @board.result == true
+    @player.player_turn(@board)
+    @player.computer_turn(@board)  
 end
+
+

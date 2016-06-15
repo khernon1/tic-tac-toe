@@ -1,84 +1,70 @@
+require 'pry'
 class Board
 
-# Board - creates the board at the beginning
-  # Initialize 
-    # Board.New - starts the game
-  # Class variables
-  # the values as they are input on the total board
-  # the winning_array
-  # Class methods
-    # Updates the board
+attr_reader :board, :result
 
-@@board = (1..9).to_a
-@@board_display =  "          #{@@board[0]} | #{@@board[1]} | #{@@board[2]}
+def initialize
+  @board = (1..9).to_a
+  @player_moves = []
+  @winning_array = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7]]
+  @computer_moves = []
+  @result = false
+end
+
+  def board_display
+    @board_display =  "          #{@board[0]} | #{@board[1]} | #{@board[2]}
           ---------
-          #{@@board[3]} | #{@@board[4]} | #{@@board[5]}
+          #{@board[3]} | #{@board[4]} | #{@board[5]}
           ---------
-          #{@@board[6]} | #{@@board[7]} | #{@@board[8]}"
-
-@@winning_array = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,5,7]]
-@@player_x = []
-@@player_o = []
-@@result = false
-@turn = 1 #used in the board method, if it is odd then the players turn, if it's even it's computer
-
-  def initialize
-  
+          #{@board[6]} | #{@board[7]} | #{@board[8]}"
+    puts @board_display
   end
 
-  def self.turn
-    @@turn
-  end
-
-  def self.result
-    @@result
-  end
-
-  def self.full_board
-    @@board
-  end
-
-  def self.player_x
-    @@player_x
-  end
-
-  def self.board_display
-    puts @@board_display
-  end
-
-  def self.board
-    if @turn.odd?
-      @@board[Player.move.to_i-1] = Player.symbol
-      @@player_x << Player.move.to_i
-     # @@board_display.update
-    else
-      @@board[Player.new_spot-1] = Player.comp_symbol
-      @@player_o << Player.new_spot
-         @@board_display =  "            #{@@board[0]} | #{@@board[1]} | #{@@board[2]}
-            ---------
-            #{@@board[3]} | #{@@board[4]} | #{@@board[5]}
-            ---------
-            #{@@board[6]} | #{@@board[7]} | #{@@board[8]}"
-      end
-    
-    @turn += 1
-    if @turn >= 9
-        puts "Game is a draw"
-        exit
+  def board_actions(player_move, computer_move, turn, player_symbol, computer_symbol)
+    if turn.to_i.odd? #if it is the players turn
+      player_board_actions(player_move, player_symbol)
+    else # if it is the computers turn
+      computer_board_actions(computer_move, computer_symbol)
     end
   end
+     
+    def player_board_actions(player_move, player_symbol)
+      @board[player_move.to_i-1] = player_symbol
+      @player_moves << player_move.to_i      
+    end
+    
 
-  def self.winner
-    # iterate through player_x array 
-      # bring in everything from winning_array that includes the 
+    def computer_board_actions(computer_move, computer_symbol)
+       @board[computer_move.to_i-1] = computer_symbol      
+       @computer_moves << computer_move.to_i
+    end
 
-    if @@winning_array.include?(@@player_x.sort)
-        puts "#{Player.player_name} has won!"
-        @@result = true
-    elsif @@winning_array.include?(@@player_o.sort)
-        puts "The computer has won!"
-        @@result = true
-    end      
+
+  def decide_winner(player_name)
+    player_combinations = @player_moves.combination(3).to_a
+    player_combinations.uniq.each do |combination|
+      player_wins(player_name) if @winning_array.include?(combination.sort)
+    end
+
+    computer_combinations = @computer_moves.combination(3).to_a
+    computer_combinations.uniq.each do |combination|
+      computer_wins(player_name) if @winning_array.include?(combination.sort)
+    end
+
   end
 
+
+    def player_wins(player_name)       
+       board_display
+       puts "#{player_name} has won!"        
+       @result = true
+    end
+    
+    def computer_wins
+       board_display
+       puts "The computer has won!"        
+       @result = true
+    end      
+
 end
+
